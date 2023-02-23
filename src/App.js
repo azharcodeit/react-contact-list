@@ -1,23 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { useState, useEffect } from "react";
+import ContactCard from "./components/ContactCard";
+import Loader from "./components/Loader";
 
 function App() {
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    fetch("https://randomuser.me/api/?results=5")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.results);
+        setResults(data.results);
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='app-wrapper'>
+      <h2>Contact list</h2>
+      {!results ? (
+        <Loader />
+      ) : (
+        results.map((result, index) => {
+          return (
+            <ContactCard
+              key={result.id.value === null ? index : result.id.value}
+              src={result.picture.thumbnail}
+              name={result.name.first}
+              lastName={result.name.last}
+              email={result.email}
+              age={result.dob.age}
+              city={result.location.city}
+              country={result.location.country}
+              number={result.cell}
+            />
+          );
+        })
+      )}
     </div>
   );
 }
